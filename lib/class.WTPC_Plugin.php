@@ -9,6 +9,8 @@ class WTPC_Plugin
         add_filter( 'woocommerce_product_data_tabs', array( $this, 'register_product_tab' ) );
         add_action( 'woocommerce_product_data_panels', array( $this, 'output_product_tab' ) );
         add_action( 'save_post', array( $this, 'save_simple_product_data' ) );
+        add_action( 'woocommerce_before_add_to_cart_form', array( $this, 'output_dimensions_form' ) );
+        add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'output_dimensions_hidden_input' ) );
     }
 
     public function enqueue_admin_assets()
@@ -54,11 +56,43 @@ class WTPC_Plugin
         if( !$nonce || !wp_verify_nonce( $nonce, WTPC_Helpers::get_nonce_action( $product_id) ) ) return;
 
         $is_measurable = isset( $_POST['_wtpc_is_measurable'] );
+
+        $min_width = isset( $_POST['_wtpc_min_width'] ) ? (int)$_POST['_wtpc_min_width'] : '';
         $max_width = isset( $_POST['_wtpc_max_width'] ) ? (int)$_POST['_wtpc_max_width'] : '';
+
+        $min_height = isset( $_POST['_wtpc_min_height'] ) ? (int)$_POST['_wtpc_min_height'] : '';
         $max_height = isset( $_POST['_wtpc_max_height'] ) ? (int)$_POST['_wtpc_max_height'] : '';
 
         WTPC_Helpers::set_measurable( $product_id, $is_measurable );
+
+        WTPC_Helpers::set_min_width( $product_id, $min_width );
         WTPC_Helpers::set_max_width( $product_id, $max_width );
+
+        WTPC_Helpers::set_min_height( $product_id, $min_height );
         WTPC_Helpers::set_max_height( $product_id, $max_height );
     }
+
+    public function output_dimensions_form()
+    {
+        global $product;
+
+        if( $product->get_type() == 'simple' && WTPC_Helpers::is_measurable( $product->get_id() ) ) :
+
+            include WTPC_DIR.'/templates/front/simple_add_to_cart.php';
+
+        endif;
+    }
+
+    public function output_dimensions_hidden_input()
+    {
+        global $product;
+
+        if( $product->get_type() == 'simple' && WTPC_Helpers::is_measurable( $product->get_id() ) ) :
+
+            include WTPC_DIR.'/templates/front/simple_inputs.php';
+
+        endif;
+    }
+
+    
 }

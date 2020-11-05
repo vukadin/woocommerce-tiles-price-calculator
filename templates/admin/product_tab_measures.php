@@ -14,6 +14,16 @@
         
         <p class="form-field dimensions_field show_if_measurable">
             <?php /* translators: WooCommerce dimension unit*/ ?>
+            <label for="wtpc_min_width"><?php echo __( 'Min Dimensions (mm)', 'wtpc' ); ?></label>
+            <span class="wrap">
+                <input id="wtpc_min_width" placeholder="<?php esc_attr_e( 'Width', 'wtpc' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_wtpc_min_width" value="<?php echo esc_attr( WTPC_Helpers::get_min_width( $product_object->get_id() ) ); ?>" />
+                <input id=wtpc_min_height" placeholder="<?php esc_attr_e( 'Height', 'wtpc' ); ?>" class="input-text wc_input_decimal last" size="6" type="text" name="_wtpc_min_height" value="<?php echo esc_attr( WTPC_Helpers::get_min_height( $product_object->get_id() ) ); ?>" />
+            </span>
+            <?php echo wc_help_tip( __( 'WxH in decimal form', 'wtpc' ) ); ?>
+        </p>
+        
+        <p class="form-field dimensions_field show_if_measurable">
+            <?php /* translators: WooCommerce dimension unit*/ ?>
             <label for="wtpc_max_width"><?php echo __( 'Max Dimensions (mm)', 'wtpc' ); ?></label>
             <span class="wrap">
                 <input id="wtpc_max_width" placeholder="<?php esc_attr_e( 'Width', 'wtpc' ); ?>" class="input-text wc_input_decimal" size="6" type="text" name="_wtpc_max_width" value="<?php echo esc_attr( WTPC_Helpers::get_max_width( $product_object->get_id() ) ); ?>" />

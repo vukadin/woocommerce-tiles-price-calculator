@@ -13,6 +13,17 @@ class WTPC_Helpers
         update_post_meta( $product_id, '_wtpc_is_measurable', $value );
     }
 
+    public static function get_min_width( $product_id )
+    {
+        return get_post_meta( $product_id, '_wtpc_min_width', true );
+    }
+
+    public static function set_min_width( $product_id, $value )
+    {
+        $value = $value >= 0 ? $value : '';
+        update_post_meta( $product_id, '_wtpc_min_width', $value );
+    }
+
     public static function get_max_width( $product_id )
     {
         return get_post_meta( $product_id, '_wtpc_max_width', true );
@@ -22,6 +33,17 @@ class WTPC_Helpers
     {
         $value = $value > 0 ? $value : '';
         update_post_meta( $product_id, '_wtpc_max_width', $value );
+    }
+
+    public static function get_min_height( $product_id )
+    {
+        return get_post_meta( $product_id, '_wtpc_min_height', true );
+    }
+
+    public static function set_min_height( $product_id, $value )
+    {
+        $value = $value >= 0 ? $value : '';
+        update_post_meta( $product_id, '_wtpc_min_height', $value );
     }
 
     public static function get_max_height( $product_id )
