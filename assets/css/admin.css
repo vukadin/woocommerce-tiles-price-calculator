@@ -1,0 +1,17 @@
+.wtpc-variation-form {
+	overflow: hidden;
+	border: 1px solid #eee;
+	padding: 10px;
+}
+
+.wtpc-variation-form input[type='text'] {
+	width: 50% !important;
+}
+
+.wtpc-variation-form input[type='checkbox'] {
+	margin-left: 10px;
+}
+
+.wtpc-variation-form .description {
+	display: block;
+}

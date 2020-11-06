@@ -1,8 +1,7 @@
 jQuery(document).ready(function ($) {
 	var debounceTimeout;
 
-	$('#wtpc-height,#wtpc-width').on('keyup input blur paste', function (e) {
-		$(this).closest('form').find('input[type="submit"]').click();
+	$('#wtpc-height,#wtpc-width').on('keyup input paste', function (e) {
 		clearTimeout(debounceTimeout);
 		debounceTimeout = setTimeout(function () {
 			calculatePrice();
@@ -27,18 +26,47 @@ jQuery(document).ready(function ($) {
 
 		$('#wtpc-calculated-area').html(formatArea(area));
 		$('#wtpc-calculated-price').html(total_price ? formatPrice(total_price) : '');
-
-		$('#wtpc-width-input').val(!isNaN(width) ? width : '');
-		$('#wtpc-height-input').val(!isNaN(height) ? height : '');
 	}
 
 	function formatArea(value) {
-		return value.replace('.', ',') + ' m²';
+		return (
+			String(value)
+				.replace(/\.?0+$/, '')
+				.replace('.', ',') + ' m²'
+		);
 	}
 
 	function formatPrice(value) {
-		return value.replace('.', ',') + '€';
+		return String(value).replace('.', ',') + '€';
 	}
+
+	$('.variations_form').on('found_variation', function (e, variation) {
+		if (!variation['wtpc_is_measurable']) return;
+
+		$('#wtpc-width').attr({
+			min: variation['wtpc_min_width'],
+			max: variation['wtpc_max_width'],
+			required: 'required',
+		});
+
+		$('#wtpc-height').attr({
+			min: variation['wtpc_min_height'],
+			max: variation['wtpc_max_height'],
+			required: 'required',
+		});
+
+		$('#wtpc-min-width-label').text(variation['wtpc_min_width']);
+		$('#wtpc-max-width-label').text(variation['wtpc_max_width']);
+		$('#wtpc-min-height-label').text(variation['wtpc_min_height']);
+		$('#wtpc-max-height-label').text(variation['wtpc_max_height']);
+
+		calculatePrice();
+
+		$('#wtpc-dimensions-calculator').data('price', variation['display_price']).show();
+	});
+	$('.variations_form').on('check_variations', function () {
+		$('#wtpc-dimensions-calculator').hide().find('input[required]').removeAttr('required').val('');
+	});
 
 	calculatePrice();
 });

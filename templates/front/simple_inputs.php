@@ -1,2 +1,0 @@
-<input type='hidden' name='wtpc_width' id='wtpc-width-input' value="<?php echo esc_attr( $width ); ?>" />
-<input type='hidden' name='wtpc_height' id='wtpc-height-input' value="<?php echo esc_attr( $height ); ?>" />

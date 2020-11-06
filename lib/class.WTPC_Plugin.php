@@ -9,15 +9,17 @@ class WTPC_Plugin
         add_filter( 'woocommerce_product_data_tabs', array( $this, 'register_product_tab' ) );
         add_action( 'woocommerce_product_data_panels', array( $this, 'output_product_tab' ) );
         add_action( 'save_post', array( $this, 'save_simple_product_data' ) );
-        add_action( 'woocommerce_before_add_to_cart_form', array( $this, 'output_dimensions_form' ) );
-        add_action( 'woocommerce_after_add_to_cart_button', array( $this, 'output_dimensions_hidden_input' ) );
-        add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'maybe_add_to_cart'), 10, 3 );
-        add_filter( 'woocommerce_add_cart_item_data', array( $this, 'add_cart_item_data'), 10, 2 );
+        add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'output_dimensions_form' ) );
+        add_filter( 'woocommerce_add_to_cart_validation', array( $this, 'maybe_add_to_cart'), 10, 4 );
+        add_filter( 'woocommerce_add_cart_item_data', array( $this, 'add_cart_item_data'), 10, 3 );
         add_filter( 'woocommerce_get_item_data', array( $this, 'get_cart_item_data'), 10, 2 );
         add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'add_order_meta' ), 10, 4 );
         add_filter( 'woocommerce_order_item_get_formatted_meta_data', array( $this, 'format_order_meta' ), 10, 2 );
         add_filter( 'woocommerce_get_cart_item_from_session', array( $this, 'get_cart_item_from_session' ), 10, 2 );
         add_action( 'woocommerce_before_calculate_totals', array( $this, 'calculate_product_price' ), 10 ); 
+        add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'output_variation_form' ), 10, 3 );
+        add_action( 'woocommerce_save_product_variation', array( $this, 'save_variation_product_data' ), 10, 2 );
+        add_filter( 'woocommerce_available_variation', array( $this, 'add_variation_data' ), 10, 3 );
     }
 
     public function enqueue_admin_assets()
@@ -83,44 +85,32 @@ class WTPC_Plugin
     {
         global $product;
 
-        if( $product->get_type() == 'simple' && WTPC_Helpers::is_measurable( $product->get_id() ) ) :
+        if( ( $product->is_type( 'simple' ) || $product->is_type( 'variable' ) ) && WTPC_Helpers::is_measurable( $product->get_id() ) ) :
 
             $width = isset( $_POST['wtpc_width'] ) && (int)$_POST['wtpc_width'] > 0 ? (int)$_POST['wtpc_width'] : '';
             $height = isset( $_POST['wtpc_height'] ) && (int)$_POST['wtpc_height'] > 0  ? (int)$_POST['wtpc_height'] : '';
 
-            include WTPC_DIR.'/templates/front/simple_add_to_cart.php';
+            include WTPC_DIR.'/templates/front/add_to_cart.php';
 
         endif;
     }
 
-    public function output_dimensions_hidden_input()
-    {
-        global $product;
-
-        if( $product->get_type() == 'simple' && WTPC_Helpers::is_measurable( $product->get_id() ) ) :
-            
-            $width = isset( $_POST['wtpc_width'] ) && (int)$_POST['wtpc_width'] > 0 ? (int)$_POST['wtpc_width'] : '';
-            $height = isset( $_POST['wtpc_height'] ) && (int)$_POST['wtpc_height'] > 0  ? (int)$_POST['wtpc_height'] : '';
-
-            include WTPC_DIR.'/templates/front/simple_inputs.php';
-
-        endif;
-    }
-
-    public function maybe_add_to_cart( $valid, $product_id, $quantity )
+    public function maybe_add_to_cart( $valid, $product_id, $quantity, $variation_id = 0 )
     {
         if( !$valid ) return false;
 
-        if( WTPC_Helpers::is_measurable( $product_id ) ) :
+        $real_product_id = $variation_id ? $variation_id : $product_id;
+
+        if( WTPC_Helpers::is_measurable( $real_product_id ) ) :
 
             $width = isset( $_POST['wtpc_width'] ) ? (int)$_POST['wtpc_width'] : 0;
             $height = isset( $_POST['wtpc_height'] ) ? (int)$_POST['wtpc_height'] : 0;
 
-            $min_width = WTPC_Helpers::get_min_width( $product_id );
-            $max_width = WTPC_Helpers::get_max_width( $product_id );
+            $min_width = WTPC_Helpers::get_min_width( $real_product_id );
+            $max_width = WTPC_Helpers::get_max_width( $real_product_id );
             
-            $min_height = WTPC_Helpers::get_min_height( $product_id );
-            $max_height = WTPC_Helpers::get_max_height( $product_id );
+            $min_height = WTPC_Helpers::get_min_height( $real_product_id );
+            $max_height = WTPC_Helpers::get_max_height( $real_product_id );
 
             if( $width < $min_width ):
                 wc_add_notice( 
@@ -171,9 +161,11 @@ class WTPC_Plugin
         return $valid;
     }
 
-    public function add_cart_item_data( $cart_item_data, $product_id )
+    public function add_cart_item_data( $cart_item_data, $product_id, $variation_id = 0 )
     {
-        if( WTPC_Helpers::is_measurable( $product_id ) ) :
+        $real_product_id = $variation_id ? $variation_id : $product_id;
+
+        if( WTPC_Helpers::is_measurable( $real_product_id ) ) :
 
             $width = isset( $_POST['wtpc_width'] ) ? (int)$_POST['wtpc_width'] : 0;
             $height = isset( $_POST['wtpc_height'] ) ? (int)$_POST['wtpc_height'] : 0;
@@ -289,5 +281,41 @@ class WTPC_Plugin
             endif;
 
         endforeach;
+    }
+
+    public function output_variation_form( $loop, $variation_data, $variation )
+    {
+        include WTPC_DIR.'/templates/admin/variation_form.php';
+    }
+
+    public function save_variation_product_data( $variation_id, $i )
+    {
+        $is_measurable = isset( $_POST['_wtpc_is_measurable'][$i] );
+
+        $min_width = isset( $_POST['_wtpc_min_width'][$i] ) ? (int)$_POST['_wtpc_min_width'][$i] : '';
+        $max_width = isset( $_POST['_wtpc_max_width'][$i] ) ? (int)$_POST['_wtpc_max_width'][$i] : '';
+
+        $min_height = isset( $_POST['_wtpc_min_height'][$i] ) ? (int)$_POST['_wtpc_min_height'][$i] : '';
+        $max_height = isset( $_POST['_wtpc_max_height'][$i] ) ? (int)$_POST['_wtpc_max_height'][$i] : '';
+
+        WTPC_Helpers::set_measurable( $variation_id, $is_measurable );
+
+        WTPC_Helpers::set_min_width( $variation_id, $min_width );
+        WTPC_Helpers::set_max_width( $variation_id, $max_width );
+
+        WTPC_Helpers::set_min_height( $variation_id, $min_height );
+        WTPC_Helpers::set_max_height( $variation_id, $max_height );
+    }
+
+    public function add_variation_data( $variations, $product, $variation )
+    {
+        $variations[ 'wtpc_is_measurable' ] = WTPC_Helpers::is_measurable( $variation->get_id() );
+        
+        $variations[ 'wtpc_min_width' ] = WTPC_Helpers::get_min_width( $variation->get_id() );
+        $variations[ 'wtpc_max_width' ] = WTPC_Helpers::get_max_width( $variation->get_id() );
+        $variations[ 'wtpc_min_height' ] = WTPC_Helpers::get_min_height( $variation->get_id() );
+        $variations[ 'wtpc_max_height' ] = WTPC_Helpers::get_max_height( $variation->get_id() );
+
+        return $variations;
     }
 }

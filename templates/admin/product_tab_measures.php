@@ -1,18 +1,22 @@
-<?php if( !defined( 'ABSPATH' ) ) exit; ?>
+<?php 
+    if( !defined( 'ABSPATH' ) ) exit; 
+    $is_measurable = WTPC_Helpers::is_measurable( $product_object->get_id() );
+?>
 <div id="measures" class="panel woocommerce_options_panel hidden">
     <div class="options_group">
         <?php
             woocommerce_wp_checkbox(
                 array(
                     'id'            => '_wtpc_is_measurable',
-                    'value'         => WTPC_Helpers::is_measurable( $product_object->get_id() ) ? 'yes' : 'no',
+                    'class'         => 'wtpc_is_measurable',
+                    'value'         => $is_measurable ? 'yes' : 'no',
                     'label'         => __( 'Nach Fläche berechnen?', 'wtpc' ),
                     'description'   => __( 'Aktivieren wenn der Produktpreis von Abmessungen abhängt (der aktuelle Preis gilt für einen Quadratmeter)', 'wtpc' ),
                 )
             );
         ?>
         
-        <p class="form-field dimensions_field show_if_measurable">
+        <p class="form-field dimensions_field show_if_measurable" <?php echo !$is_measurable ? 'style="display:none"' : ''; ?>>
             <?php /* translators: WooCommerce dimension unit*/ ?>
             <label for="wtpc_min_width"><?php echo __( 'Min. Größe (mm)', 'wtpc' ); ?></label>
             <span class="wrap">
@@ -22,7 +26,7 @@
             <?php echo wc_help_tip( __( 'BxH in Dezimalform', 'wtpc' ) ); ?>
         </p>
         
-        <p class="form-field dimensions_field show_if_measurable">
+        <p class="form-field dimensions_field show_if_measurable" <?php echo !$is_measurable ? 'style="display:none"' : ''; ?>>
             <?php /* translators: WooCommerce dimension unit*/ ?>
             <label for="wtpc_max_width"><?php echo __( 'Max. Größe (mm)', 'wtpc' ); ?></label>
             <span class="wrap">
