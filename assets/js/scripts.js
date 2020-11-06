@@ -34,4 +34,6 @@ jQuery(document).ready(function ($) {
 	function formatPrice(value) {
 		return value.replace('.', ',') + '€';
 	}
+
+	calculatePrice();
 });

@@ -7,7 +7,7 @@
                     <label for="wtpc-height"><?php _e( 'Height (mm)', 'wtpc' ); ?></label>
                 </td>
                 <td>
-                    <input type="number" id="wtpc-height" value="" autocomplete="off" min="<?php echo esc_attr( WTPC_Helpers::get_min_height( $product->get_id() ) ); ?>" max="<?php echo esc_attr( WTPC_Helpers::get_max_height( $product->get_id() ) ); ?>" step="1">
+                    <input type="number" id="wtpc-height" value="<?php echo esc_attr( $height ); ?>" autocomplete="off" min="<?php echo esc_attr( WTPC_Helpers::get_min_height( $product->get_id() ) ); ?>" max="<?php echo esc_attr( WTPC_Helpers::get_max_height( $product->get_id() ) ); ?>" step="1">
                 </td>
             </tr>
             <tr>
@@ -15,7 +15,7 @@
                     <label for="wtpc-width"><?php _e( 'Width (mm)', 'wtpc' ); ?></label>
                 </td>
                 <td>
-                    <input type="number" id="wtpc-width" value="" autocomplete="off" min="<?php echo esc_attr( WTPC_Helpers::get_min_width( $product->get_id() ) ); ?>" max="<?php echo esc_attr( WTPC_Helpers::get_max_width( $product->get_id() ) ); ?>" step="1">
+                    <input type="number" id="wtpc-width" value="<?php echo esc_attr( $width ); ?>" autocomplete="off" min="<?php echo esc_attr( WTPC_Helpers::get_min_width( $product->get_id() ) ); ?>" max="<?php echo esc_attr( WTPC_Helpers::get_max_width( $product->get_id() ) ); ?>" step="1">
                 </td>
             </tr>
             <tr>
