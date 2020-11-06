@@ -2,10 +2,15 @@ jQuery(document).ready(function ($) {
 	var debounceTimeout;
 
 	$('#wtpc-height,#wtpc-width').on('keyup input blur paste', function (e) {
+		$(this).closest('form').find('input[type="submit"]').click();
 		clearTimeout(debounceTimeout);
 		debounceTimeout = setTimeout(function () {
 			calculatePrice();
 		}, 50);
+	});
+
+	$('#wtpc-dimensions-calculator form').on('submit', function (e) {
+		e.preventDefault();
 	});
 
 	function calculatePrice() {

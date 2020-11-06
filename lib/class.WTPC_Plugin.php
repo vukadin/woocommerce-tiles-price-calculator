@@ -35,7 +35,7 @@ class WTPC_Plugin
     public function register_product_tab( $tabs )
     {
         $tabs['measures']= array(
-            'label'    => __( 'Measures', 'wtpc' ),
+            'label'    => __( 'Fläche', 'wtpc' ),
             'target'   => 'measures',
             'wrapper_class' => 'show_if_simple',
             'class'    => array(),
@@ -126,7 +126,7 @@ class WTPC_Plugin
                 wc_add_notice( 
                     sprintf(
                         __( '%s value must be greater than or equal to %s.', 'wtpc' ),   
-                        __( 'Width', 'wtpc' ),
+                        __( 'Breite', 'wtpc' ),
                         $min_width
                     ), 
                     'error' 
@@ -136,7 +136,7 @@ class WTPC_Plugin
                 wc_add_notice( 
                     sprintf(
                         __( '%s value must be less than or equal to %s.', 'wtpc' ),   
-                        __( 'Width', 'wtpc' ),
+                        __( 'Breite', 'wtpc' ),
                         $max_width
                     ), 
                     'error' 
@@ -148,7 +148,7 @@ class WTPC_Plugin
                 wc_add_notice( 
                     sprintf(
                         __( '%s value must be greater than or equal to %s.', 'wtpc' ),   
-                        __( 'Height', 'wtpc' ),
+                        __( 'Höhe', 'wtpc' ),
                         $min_height
                     ), 
                     'error' 
@@ -158,7 +158,7 @@ class WTPC_Plugin
                 wc_add_notice( 
                     sprintf(
                         __( '%s value must be less than or equal to %s.', 'wtpc' ),   
-                        __( 'Height', 'wtpc' ),
+                        __( 'Höhe', 'wtpc' ),
                         $max_height
                     ), 
                     'error' 
@@ -191,21 +191,21 @@ class WTPC_Plugin
     {
         if( isset( $cart_item_data['wtpc_width'] ) ) :
             $item_data[] = array(
-                'key' => __( 'Width (mm)', 'wtpc' ),
+                'key' => __( 'Breite (mm)', 'wtpc' ),
                 'value' => $cart_item_data['wtpc_width']
             );
         endif;
 
         if( isset( $cart_item_data['wtpc_height'] ) ) :
             $item_data[] = array(
-                'key' => __( 'Height (mm)', 'wtpc' ),
+                'key' => __( 'Höhe (mm)', 'wtpc' ),
                 'value' => $cart_item_data['wtpc_height']
             );
         endif;
 
         if( isset( $cart_item_data['wtpc_area'] ) ) :
             $item_data[] = array(
-                'key' => __( 'Total area (m²)', 'wtpc' ),
+                'key' => __( 'Gesamtfläche (m²)', 'wtpc' ),
                 'value' => $cart_item_data['wtpc_area']
             );
         endif;
@@ -243,15 +243,15 @@ class WTPC_Plugin
             switch( $value->key ) :
                 case 'wtpc_width' :
                     $formatted_meta[$key]->display_value = $value->value;
-                    $formatted_meta[$key]->display_key = __( 'Width (mm)', 'wtpc' );
+                    $formatted_meta[$key]->display_key = __( 'Breite (mm)', 'wtpc' );
                 break;
                 case 'wtpc_height' :
                     $formatted_meta[$key]->display_value = $value->value;
-                    $formatted_meta[$key]->display_key = __( 'Height (mm)', 'wtpc' );
+                    $formatted_meta[$key]->display_key = __( 'Höhe (mm)', 'wtpc' );
                 break;
                 case 'wtpc_area' :
                     $formatted_meta[$key]->display_value = $value->value;
-                    $formatted_meta[$key]->display_key = __( 'Total area (m²)', 'wtpc' );
+                    $formatted_meta[$key]->display_key = __( 'Gesamtfläche (m²)', 'wtpc' );
                 break;
             endswitch;
         endforeach;
